@@ -8,18 +8,30 @@ app = Flask(__name__)
 
 
 def get_fact():
-
+    """Gets the fact"""
     response = requests.get("http://unkno.com")
 
     soup = BeautifulSoup(response.content, "html.parser")
     facts = soup.find_all("div", id="content")
-
     return facts[0].getText()
 
 
+def get_pig(fact):
+    """Gets the pig latin post url"""
+    data = {'input_text': fact}
+    response = requests.post('https://hidden-journey-62459.herokuapp.com/piglatinize/', data=data)
+    return response
+
 @app.route('/')
 def home():
-    return "FILL ME!"
+    fact = get_fact()
+
+    #   Stripped some punctuation
+    fact = fact.replace('.', '')
+    fact = fact.replace('"', '')
+
+    resp = get_pig(fact)
+    return resp.url
 
 
 if __name__ == "__main__":
